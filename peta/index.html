@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <title>B-ATM</title>
+        <meta name="robots" content="index, follow" />
+        <meta name="description" content="Extbot app landing bootstrap 5 template is an awesome website template for any app store.">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css"><link rel="stylesheet" href="css/L.Control.Locate.min.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-search.css">
+        <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <!-- Favicon -->
+        <link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon.ico" />
+
+        <!-- CSS
+        ============================================ -->
+
+        <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="assets/css/icofont.min.css" />
+        <link rel="stylesheet" href="assets/css/animate.min.css">
+        <link rel="stylesheet" href="assets/css/swiper-bundle.min.css">
+        <link rel="stylesheet" href="assets/css/magnific-popup.min.css" />
+        <link rel="stylesheet" href="assets/css/gordita-font.css" />
+
+        <!-- Style CSS -->
+        <link rel="stylesheet" href="assets/css/style.css">
+        <style>
+        #map {
+            width: 1645px;
+            height: 851px;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <!-- Begin Main Header Area -->
+        <header class="header">
+            <div class="header-area header-position-absolute header-sticky header-style-1">
+                <div class="container header-container">
+                    <div class="row align-items-center">
+                        <div class="col-xl-3 col-lg-2 col-6">
+                            <a href="index.html" class="header-logo">
+                                <img src="assets/images/logo/1-1.png" alt="Header Logo">
+                            </a>
+                        </div>
+                        <div class="col-lg-9 d-none d-lg-block">
+                            <div class="header-menu container">
+                                <nav class="header-menu-nav onepage-nav">
+                                    <ul class="header-right">
+                                        <li>
+                                            <a href="index.html">Beranda</a>
+                                        </li>
+                                        <li>
+                                            <a href="peta/index.html">Peta</a>
+                                        </li>
+                                        <li>
+                                            <a href="video.html">Video</a>
+                                        </li>
+                                        <li>
+                                            <a href="artikel.html">Artikel</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-lg-4 col-6">
+                            <ul class="header-right">
+                                <li class="d-flex d-lg-none">
+                                    <button class="btn p-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">
+                                        <i class="icofont-navigation-menu"></i>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions">
+                <div class="offcanvas-header">
+                    <a href="index.html" class="header-logo">
+                        <img src="assets/images/logo/1-1.png" alt="Header Logo">
+                    </a>
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <div class="header-offcanvas-menu">
+                        <nav class="header-offcanvas-nav onepage-offcanvas-nav">
+                            <ul>
+                                <li>
+                                    <a href="index.html">Beranda</a>
+                                </li>
+                                 <li>
+                                    <a href="peta/index.html">Peta</a>
+                                </li>
+                                <li>
+                                    <a href="video.html">Video</a>
+                                </li>
+                                <li>
+                                    <a href="artikel.html">Artikel</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Main Header Area End Here -->
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script><script src="js/L.Control.Locate.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="js/leaflet-search.js"></script>
+        <script src="data/atm_bogor_1.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString') {
+              highlightLayer.setStyle({
+                color: '#ffff00',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#ffff00',
+                fillOpacity: 1
+              });
+            }
+            highlightLayer.openPopup();
+        }
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:28, minZoom:1
+        })
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        L.control.locate({locateOptions: {maxZoom: 19}}).addTo(map);
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+            if (bounds_group.getLayers().length) {
+                map.fitBounds(bounds_group.getBounds());
+            }
+        }
+        map.createPane('pane_OSMStandard_0');
+        map.getPane('pane_OSMStandard_0').style.zIndex = 400;
+        var layer_OSMStandard_0 = L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            pane: 'pane_OSMStandard_0',
+            opacity: 1.0,
+            attribution: '<a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors, CC-BY-SA</a>',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 19
+        });
+        layer_OSMStandard_0;
+        map.addLayer(layer_OSMStandard_0);
+        function pop_atm_bogor_1(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2"><strong>nama_atm</strong><br />' + (feature.properties['nama_atm'] !== null ? autolinker.link(feature.properties['nama_atm'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">alamat</th>\
+                        <td>' + (feature.properties['alamat'] !== null ? autolinker.link(feature.properties['alamat'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">jenis_bank</th>\
+                        <td>' + (feature.properties['jenis_bank'] !== null ? autolinker.link(feature.properties['jenis_bank'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">kecamatan</th>\
+                        <td>' + (feature.properties['kecamatan'] !== null ? autolinker.link(feature.properties['kecamatan'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">class</th>\
+                        <td>' + (feature.properties['class'] !== null ? autolinker.link(feature.properties['class'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_atm_bogor_1_0(feature) {
+            switch(String(feature.properties['jenis_bank'])) {
+                default:
+                    return {
+                pane: 'pane_atm_bogor_1',
+                interactive: true,
+            }
+                    break;
+                case 'BANK BCA':
+                    return {
+                pane: 'pane_atm_bogor_1',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/Bank BCA Logo (SVG-1080p) - FileVector69.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'BANK BNI':
+                    return {
+                pane: 'pane_atm_bogor_1',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/Bank BNI Logo (SVG-1080p) - FileVector69.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'BANK BRI':
+                    return {
+                pane: 'pane_atm_bogor_1',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/Bank BRI (Bank Rakyat Indonesia) Logo (SVG-1080p) - FileVector69.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'BANK BTN':
+                    return {
+                pane: 'pane_atm_bogor_1',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/Bank BTN (Bank Tabungan Negara) Logo (SVG-1080p) - FileVector69.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'BANK MANDIRI':
+                    return {
+                pane: 'pane_atm_bogor_1',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/Bank Mandiri Logo (SVG-1080p) - FileVector69.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_atm_bogor_1');
+        map.getPane('pane_atm_bogor_1').style.zIndex = 401;
+        map.getPane('pane_atm_bogor_1').style['mix-blend-mode'] = 'normal';
+        var layer_atm_bogor_1 = new L.geoJson(json_atm_bogor_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_atm_bogor_1',
+            layerName: 'layer_atm_bogor_1',
+            pane: 'pane_atm_bogor_1',
+            onEachFeature: pop_atm_bogor_1,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.marker(latlng, style_atm_bogor_1_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_atm_bogor_1);
+        map.addLayer(layer_atm_bogor_1);
+        var osmGeocoder = new L.Control.Geocoder({
+            collapsed: true,
+            position: 'topleft',
+            text: 'Search',
+            title: 'Testing'
+        }).addTo(map);
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .className += ' fa fa-search';
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .title += 'Search for a place';
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'atm_bogor<br /><table><tr><td style="text-align: center;"><img src="legend/atm_bogor_1_0.png" /></td><td></td></tr><tr><td style="text-align: center;"><img src="legend/atm_bogor_1_BANKBCA1.png" /></td><td>BANK BCA</td></tr><tr><td style="text-align: center;"><img src="legend/atm_bogor_1_BANKBNI2.png" /></td><td>BANK BNI</td></tr><tr><td style="text-align: center;"><img src="legend/atm_bogor_1_BANKBRI3.png" /></td><td>BANK BRI</td></tr><tr><td style="text-align: center;"><img src="legend/atm_bogor_1_BANKBTN4.png" /></td><td>BANK BTN</td></tr><tr><td style="text-align: center;"><img src="legend/atm_bogor_1_BANKMANDIRI5.png" /></td><td>BANK MANDIRI</td></tr></table>': layer_atm_bogor_1,"OSM Standard": layer_OSMStandard_0,}).addTo(map);
+        setBounds();
+        map.addControl(new L.Control.Search({
+            layer: layer_atm_bogor_1,
+            initial: false,
+            hideMarkerOnCollapse: true,
+            propertyName: 'jenis_bank'}));
+        document.getElementsByClassName('search-button')[0].className +=
+         ' fa fa-binoculars';
+        </script>
+    </body>
+</html>
